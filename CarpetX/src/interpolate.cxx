@@ -894,21 +894,21 @@ extern "C" void CarpetX_Interpolate(const CCTK_POINTER_TO_CONST cctkGH_,
   assert(!reflection_upper_x);
   assert(!reflection_upper_y);
   assert(!reflection_upper_z);
-  if (reflection_z) {
-    // The code below is only valid for Psi4
-    assert(nvars == 2);
-    assert(varinds[0] == CCTK_VarIndex("Weyl::Psi4re"));
-    assert(varinds[1] == CCTK_VarIndex("Weyl::Psi4im"));
-    // l^a = et^a + er^a
-    // n^a = et^a - er^a
-    // m^a = etheta^a + i ephi^a
-    // Psi4 = C_abcd m-bar^b n^b m-bar^c n^d
-    for (int n = 0; n < npoints; ++n) {
-      if (symmetry_reflected_z[n]) {
-        resultptrs[0][n] = -resultptrs[0][n];
-        resultptrs[1][n] = +resultptrs[1][n];
-      }
-    }
-  }
+  // if (reflection_z) {
+  //   // The code below is only valid for Psi4
+  //   assert(nvars == 2);
+  //   assert(varinds[0] == CCTK_VarIndex("Weyl::Psi4re"));
+  //   assert(varinds[1] == CCTK_VarIndex("Weyl::Psi4im"));
+  //   // l^a = et^a + er^a
+  //   // n^a = et^a - er^a
+  //   // m^a = etheta^a + i ephi^a
+  //   // Psi4 = C_abcd m-bar^b n^b m-bar^c n^d
+  //   for (int n = 0; n < npoints; ++n) {
+  //     if (symmetry_reflected_z[n]) {
+  //       resultptrs[0][n] = -resultptrs[0][n];
+  //       resultptrs[1][n] = +resultptrs[1][n];
+  //     }
+  //   }
+  // }
 }
 } // namespace CarpetX
