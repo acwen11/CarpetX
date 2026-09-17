@@ -652,12 +652,12 @@ public:
     } // for rank
   }
 
-  // Loop over outer ghost points inside the outermost point.
+  // Loop over all outer ghost OR boundary points.
   // Loop over faces first, then edges, then corners.
   template <int CI, int CJ, int CK, int VS = 1, int N = 1,
             int NT = AMREX_GPU_MAX_THREADS, typename F>
   inline CCTK_KERNEL void
-  loop_ghostsm1_device(const vect<int, dim> &group_nghostzones,
+  loop_outer_device(const vect<int, dim> &group_nghostzones,
                      const F &f) const {
     vect<int, dim> bnd_min, bnd_max;
     boundary_box<CI, CJ, CK>(group_nghostzones, bnd_min, bnd_max);
@@ -671,14 +671,13 @@ public:
         for (int nj = -1; nj <= +1; ++nj) {
           for (int ni = -1; ni <= +1; ++ni) {
             if ((ni == 0) + (nj == 0) + (nk == 0) == rank) {
-
               const vect<int, dim> inormal{ni, nj, nk};
 
               vect<int, dim> imin, imax;
               for (int d = 0; d < dim; ++d) {
                 switch (inormal[d]) {
                 case -1: // lower boundary
-                  imin[d] = all_min[d] + 1;
+                  imin[d] = all_min[d];
                   imax[d] = int_min[d];
                   break;
                 case 0: // interior
@@ -687,7 +686,7 @@ public:
                   break;
                 case +1: // upper boundary
                   imin[d] = int_max[d];
-                  imax[d] = all_max[d] - 1;
+                  imax[d] = all_max[d];
                   break;
                 default:
                   assert(0);
@@ -696,10 +695,10 @@ public:
                 using std::min, std::max;
                 imin[d] = max(tmin[d], imin[d]);
                 imax[d] = min(tmax[d], imax[d]);
-
-                loop_box_device<CI, CJ, CK, VS, N, NT>(bnd_min, bnd_max, imin,
-                                                       imax, f);
               }
+
+              loop_box_device<CI, CJ, CK, VS, N, NT>(bnd_min, bnd_max, imin,
+                                                     imax, f);
             } // if rank
           }
         }
